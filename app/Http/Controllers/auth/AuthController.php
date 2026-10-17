@@ -5,6 +5,7 @@ use App\Models\User;
 use App\Models\AuditLog;
 use App\Http\Controllers\Controller;
 use App\Mail\WelcomeEmail;
+use App\Models\UserProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -21,6 +22,7 @@ public function register(Request $request)
         'name'     => ['required', 'string', 'max:255'],
         'email'    => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
         'password' => ['required', 'min:6'], 
+        'phone'    => ['required', 'string', 'max:15'],
     ]);
 
     // Insert User into db
@@ -30,9 +32,12 @@ public function register(Request $request)
         'password' => Hash::make($request->password)
     ]);
 
-
+    $profile = UserProfile::create([
+        'user_id' => $user->id,
+        'phone'   => $request->phone
+    ]);
     // email verification
-    $user->sendEmailVerificationNotification();
+    // $user->sendEmailVerificationNotification();
     // Issue Token 
     $token = $user->createToken('auth-token');
     // log action $userId,$action,$body
@@ -52,6 +57,7 @@ public function register(Request $request)
         'user'    => $user,
         'token'   => $token,
         'logs'    =>$logs,
+        'profile' => $profile,
     ], 201);
 }
 

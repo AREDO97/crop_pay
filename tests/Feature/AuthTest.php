@@ -13,6 +13,7 @@ test('user can create an account', function () {
         'name' => 'Ivan Joe',
         'email' => 'van@gmail.com',
         'password' => 'ivan256@@',
+        'phone'    =>'+256 0767222023'
     ]);
   
     $response->assertStatus(201);
