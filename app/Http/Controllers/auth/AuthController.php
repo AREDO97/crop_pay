@@ -199,14 +199,15 @@ public function googleCallback()
         $plainTextToken = $tokenResult->plainTextToken;
 
         // Fetch frontend URL from config
-        $frontendUrl = config('services.frontend.url', 'https://ob39-ug-olive.vercel.app');
+        $frontendUrl = config('services.frontend.url', 'https://crop-pay.onrender.com/docs/api/v1/dashboard
+');
 
         // Redirect to your frontend callback route with the token
         // Change '/auth/callback' to match your actual frontend router path
         return redirect()->to("{$frontendUrl}/auth/callback?token={$plainTextToken}");
 
     } catch (\Exception $e) {
-        $frontendUrl = config('services.frontend.url', 'https://ob39-ug-olive.vercel.app');
+        $frontendUrl = config('services.frontend.url', 'https://crop-pay.onrender.com/docs/api/v1/dashboard');
         return redirect()->to("{$frontendUrl}/login?error=" . urlencode('Google authentication failed.'));
     }
 }
