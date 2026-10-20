@@ -198,18 +198,17 @@ public function googleCallback()
         $tokenResult = $user->createToken('auth_token');
         $plainTextToken = $tokenResult->plainTextToken;
 
-        // Fetch base frontend URL from config
-        $frontendUrl = config('services.frontend.url', 'https://hunter-ten-phi.vercel.app');
+        // Fetch frontend URL from config (which includes /dashboard)
+        $frontendUrl = config('services.frontend.url', 'https://hunter-ten-phi.vercel.app/dashboard');
 
-        // Redirect to your frontend callback route with the token
-        return redirect()->to("{$frontendUrl}/auth/callback?token={$plainTextToken}");
+        // Redirect straight to the dashboard with the token as a query parameter
+        return redirect()->to("{$frontendUrl}?token={$plainTextToken}");
 
     } catch (\Exception $e) {
-        $frontendUrl = config('services.frontend.url', 'https://hunter-ten-phi.vercel.app');
-        return redirect()->to("{$frontendUrl}/login?error=" . urlencode('Google authentication failed.'));
+        $baseFrontend = 'https://hunter-ten-phi.vercel.app';
+        return redirect()->to("{$baseFrontend}/login?error=" . urlencode('Google authentication failed.'));
     }
 }
-
 // forgot password endpoint
 public function forgotPassword(Request $request)
 {
