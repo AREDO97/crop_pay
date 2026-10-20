@@ -31,6 +31,10 @@ return [
     'redirect' => env('GOOGLE_REDIRECT_URI'),
 
 ],
+// frontend url
+'frontend' => [
+    'url' => env('FRONTEND_URL'),
+],
 
 'pesapal' => [
     'consumer_key'    => env('PESAPAL_CONSUMER_KEY'),
