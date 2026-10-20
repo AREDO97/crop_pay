@@ -198,16 +198,14 @@ public function googleCallback()
         $tokenResult = $user->createToken('auth_token');
         $plainTextToken = $tokenResult->plainTextToken;
 
-        // Fetch frontend URL from config
-        $frontendUrl = config('services.frontend.url', 'https://crop-pay.onrender.com/docs/api/v1/dashboard
-');
+        // Fetch base frontend URL from config
+        $frontendUrl = config('services.frontend.url', 'https://hunter-ten-phi.vercel.app');
 
         // Redirect to your frontend callback route with the token
-        // Change '/auth/callback' to match your actual frontend router path
         return redirect()->to("{$frontendUrl}/auth/callback?token={$plainTextToken}");
 
     } catch (\Exception $e) {
-        $frontendUrl = config('services.frontend.url', 'https://crop-pay.onrender.com/docs/api/v1/dashboard');
+        $frontendUrl = config('services.frontend.url', 'https://hunter-ten-phi.vercel.app');
         return redirect()->to("{$frontendUrl}/login?error=" . urlencode('Google authentication failed.'));
     }
 }
