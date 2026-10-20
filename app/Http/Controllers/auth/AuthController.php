@@ -182,10 +182,10 @@ public function google()
 public function googleCallback()
 {
     try {
-        // Retrieve the user from Google
+        // Retrieve user from Google
         $googleUser = Socialite::driver('google')->stateless()->user();
 
-        // Find or create the user in the database
+        // Find or create user in database
         $user = User::updateOrCreate([
             'email' => $googleUser->getEmail(),
         ], [
@@ -198,11 +198,10 @@ public function googleCallback()
         $tokenResult = $user->createToken('auth_token');
         $plainTextToken = $tokenResult->plainTextToken;
 
-        // Fetch frontend URL from config (which includes /dashboard)
-        $frontendUrl = config('services.frontend.url', 'https://hunter-ten-phi.vercel.app/dashboard');
+        // Redirect to the backend docs endpoint as requested
+        $redirectUrl = 'https://crop-pay.onrender.com/docs/api/v1/dashboard';
 
-        // Redirect straight to the dashboard with the token as a query parameter
-        return redirect()->to("{$frontendUrl}?token={$plainTextToken}");
+        return redirect()->to("{$redirectUrl}?token={$plainTextToken}");
 
     } catch (\Exception $e) {
         $baseFrontend = 'https://hunter-ten-phi.vercel.app';
