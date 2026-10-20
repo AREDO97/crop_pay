@@ -181,26 +181,34 @@ public function google()
 
 public function googleCallback()
 {
-    //  retrieving the user from google
-    $googleUser = Socialite::driver('google')->stateless()->user();
+    try {
+        // Retrieve the user from Google
+        $googleUser = Socialite::driver('google')->stateless()->user();
 
-    // Find or create the user in  database
-    $user = User::updateOrCreate([
-        'email' => $googleUser->getEmail(),
-    ], [
-        'name'      => $googleUser->getName(),
-        'google_id' => $googleUser->getId(),
-        'password'  => bcrypt(Str::random(16)),
-    ]);
+        // Find or create the user in the database
+        $user = User::updateOrCreate([
+            'email' => $googleUser->getEmail(),
+        ], [
+            'name'      => $googleUser->getName(),
+            'google_id' => $googleUser->getId(),
+            'password'  => bcrypt(Str::random(16)),
+        ]);
 
-    // Issue token to user
-    $token = $user->createToken('auth_token');
+        // Issue Sanctum token to user
+        $tokenResult = $user->createToken('auth_token');
+        $plainTextToken = $tokenResult->plainTextToken;
 
-    return response()->json([
-        'status' => 'success',
-        'token'  => $token,
-        'user'   => $user
-    ]);
+        // Fetch frontend URL from config
+        $frontendUrl = config('services.frontend.url', 'https://ob39-ug-olive.vercel.app');
+
+        // Redirect to your frontend callback route with the token
+        // Change '/auth/callback' to match your actual frontend router path
+        return redirect()->to("{$frontendUrl}/auth/callback?token={$plainTextToken}");
+
+    } catch (\Exception $e) {
+        $frontendUrl = config('services.frontend.url', 'https://ob39-ug-olive.vercel.app');
+        return redirect()->to("{$frontendUrl}/login?error=" . urlencode('Google authentication failed.'));
+    }
 }
 
 // forgot password endpoint
