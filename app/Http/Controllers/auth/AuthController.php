@@ -194,19 +194,20 @@ public function googleCallback()
             'password'  => bcrypt(Str::random(16)),
         ]);
 
-        // Issue Sanctum token to user
-        $tokenResult = $user->createToken('auth_token');
-        $plainTextToken = $tokenResult->plainTextToken;
+        // Issue token to user
+        $token = $user->createToken('auth_token');
 
-        // Fetch frontend URL from config (which includes /dashboard)
-        $frontendUrl = config('services.frontend.url', 'https://hunter-ten-phi.vercel.app/dashboard');
-
-        // Redirect straight to the dashboard with the token as a query parameter
-        return redirect()->to("{$frontendUrl}?token={$plainTextToken}");
+        return response()->json([
+            'status' => 'success',
+            'token'  => $token,
+            'user'   => $user
+        ]);
 
     } catch (\Exception $e) {
-        $baseFrontend = 'https://hunter-ten-phi.vercel.app';
-        return redirect()->to("{$baseFrontend}/login?error=" . urlencode('Google authentication failed.'));
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Google authentication failed.'
+        ], 422);
     }
 }
 // forgot password endpoint
