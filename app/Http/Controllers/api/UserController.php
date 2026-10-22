@@ -10,11 +10,15 @@ use App\Models\AuditLog;
 class UserController extends Controller
 {
   // all users
-  public function index()
-  {
-    $users=User::latest()->paginate(10);
-    return response()->json($users);
-  }
+ public function index()
+{
+    // Eager load the profile relationship before pagination
+    $users = User::with('profile')->latest()->paginate(10);
+
+    return response()->json([
+        'data'   => $users,
+    ]);
+}
   //access one user
   public function oneUser(Request $request ,User $user)
   {
@@ -54,8 +58,8 @@ public function update(Request $request,User $user)
 public function softDelete(Request $request,User $user)
 {
     // check user role
-    $user = $request->user();
-    if($user->role !== 'admin' && $user->role !== 'super_admin')
+    $admin = $request->user();
+    if($admin->role !== 'admin' && $admin->role !== 'super_admin')
         {
             abort(403,'Unauthorised action');
         }
