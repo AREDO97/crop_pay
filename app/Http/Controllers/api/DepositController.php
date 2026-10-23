@@ -1,10 +1,12 @@
 <?php
 
 namespace App\Http\Controllers\api;
-use App\Services\YoolaSmsService;
+
 use App\Http\Controllers\Controller;
 use App\Models\Deposit;
 use App\Models\SavingGoal;
+use App\Services\YoolaSmsService;
+use App\Services\PesapalTokenService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -19,14 +21,14 @@ use NjoguAmos\Pesapal\Enums\RedirectMode;
 class DepositController extends Controller
 {
     // create a Pesapal deposit.
-    public function create(Request $request, SavingGoal $goal,YoolaSmsService $sms)
+    public function create(Request $request, SavingGoal $goal, YoolaSmsService $sms, PesapalTokenService $tokenService)
     {
         $user = $request->user();
 
         // Validate the amount 
         $request->validate([
             'amount' => ['required', 'numeric', 'min:1'],
-            'phone' =>'required'
+            'phone' => 'required'
         ]);
 
         // check ownership
@@ -34,11 +36,13 @@ class DepositController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
+        // 1. ENSURE A VALID TOKEN EXISTS BEFORE CALLING PESAPAL
+        $tokenService->ensureValidToken();
+
         //  unique merchant reference.
         $reference = 'CP-' . strtoupper((string) Str::ulid());
 
         // Creating the deposit as PENDING.
-       
         $deposit = Deposit::create([
             'user_id' => $user->id,
             'saving_goal_id' => $goal->id,
@@ -48,37 +52,28 @@ class DepositController extends Controller
             'payment_method' => 'pesapal',
         ]);
 
-
         // send an sms
         $sms->send(
-              $request->phone,
-             'Your depositing money into crop pay, enter pin to approve'
-            );
+            $request->phone,
+            'Your depositing money into crop pay, enter pin to approve'
+        );
+
         // Get the IPN ID registered with Pesapal.
         $ipnId = config('services.pesapal.ipn_id');
 
         // Build the Pesapal order.
         $orderData = new PesapalOrderData(
             id: $deposit->reference,
-
             currency: ISOCurrencyCode::UGX,
-
             amount: (float) $deposit->amount,
-
             description: 'Saving deposit',
-
-            // Pesapal redirects the customer here after payment.
             callbackUrl: route('pesapal.callback'),
-
-            // Your registered Pesapal IPN.
             notificationId: $ipnId,
-
             cancellationUrl: route('pesapal.cancel'),
-
             redirectMode: RedirectMode::TOP_WINDOW,
         );
 
-        // Pesapal  billing information.
+        // Pesapal billing information.
         $billingAddress = new PesapalAddressData(
             emailAddress: $user->email,
             countryCode: ISOCountryCode::UG,
@@ -110,6 +105,7 @@ class DepositController extends Controller
             'payment_url' => $order['redirect_url'],
         ], 201);
     }
+
     // deposits history
     public function index(Request $request)
     {
