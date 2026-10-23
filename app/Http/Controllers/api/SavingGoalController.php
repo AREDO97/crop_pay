@@ -19,21 +19,17 @@ class SavingGoalController extends Controller
         $user = $request->user();
         // validation
         $request->validate([
-            'target_amount'=>'numeric|sometimes|nullable',
-            'current_amount'=>'numeric'
+            'target_amount'=>'required|sometimes',
+            'category_id'  => 'required'
         ]);
         // create goal
         $goal = SavingGoal::create([
             'user_id'       => $user->id,
             'category_id'   => $request->category_id,
             'target_amount' =>$request->target_amount,
-            'current_amount'=>$request->current_amount
         ]);
         // insert contact into profile
-        $profile = UserProfile::create([
-            'phone'   => $request->phone,
-            'user_id' =>$user->id,
-        ]);
+        $profile = $user->profile;
         // send sms to user
             $sms->send(
                 $profile->phone,

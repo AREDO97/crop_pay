@@ -17,7 +17,6 @@ test('users can view saving goals', function () {
         'user_id'       =>$admin->id,
         'category_id'   =>$category->id,
         'target_amount' =>10000,
-        'current_amount'=>20000,
     ]);
     $response= $this->getJson('/api/v1/saving_goals');
 
