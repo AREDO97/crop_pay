@@ -19,10 +19,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\auth\PasswordResetController;
 
 // register user
-Route::post('v1/register',[AuthController::class,'register'])->middleware('throttle:3,1')
+Route::post('v1/register',[AuthController::class,'register'])->middleware('throttle:5,1')
 ->name('register');
 // login user
-Route::post('v1/login',[authController::class,'login'])->middleware('throttle:3,1')
+Route::post('v1/login',[authController::class,'login'])->middleware('throttle:5,1')
 ->name('login');
 // log out endpoint
 Route::post('v1/logout',[authController::class,'logout'])->middleware('auth:sanctum')
