@@ -18,7 +18,9 @@ class SavingGoal extends Model
         'category_id',
         'target_amount',
         'current_amount',
-        'is_active'
+        'is_active',
+        'description',
+        'target_date',
       ];
       // user
       public function user()

@@ -20,7 +20,7 @@ class SavingGoalController extends Controller
         // validation
             $request->validate([
             'target_amount' => ['required', 'numeric', 'gt:0'],
-            'category_id'   => ['required', 'exists:categories,id'],
+            'category_id'   => ['required',],
             'description'   => ['nullable', 'string', 'max:100'],
             'target_date'   => ['nullable', 'date', 'after_or_equal:today'],
         ]);
@@ -35,10 +35,14 @@ class SavingGoalController extends Controller
         // insert contact into profile
         $profile = $user->profile;
         // send sms to user
-            $sms->send(
-                $profile->phone,
-                'Your saving goal has been created, proceed to make your first deposit'
-            );
+          // Send SMS only if profile exists and has a phone number
+        if ($profile && !empty($profile->phone)) {
+        $sms->send(
+            $profile->phone,
+            'Your saving goal has been created, proceed to make your first deposit'
+        );
+    }
+    
         // notify admins
         $admins = User::whereIn('role',['admin','super_admin'])->get();
         foreach($admins as $admin)
@@ -86,4 +90,6 @@ class SavingGoalController extends Controller
                 'saving_goal' => $goal
             ]);
     }
+    // delete saving goal 
+    
 }

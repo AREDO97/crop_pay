@@ -107,7 +107,9 @@ Route::middleware(['auth:sanctum','role:admin,super_admin','throttle:5,1'])->gro
     // deposit money
     Route::post('/v1/deposits/{goal}',[DepositController::class,'create']);
  });
-
+// all deposits
+    Route::get('v1/deposits/admin',[DepositController::class,'deposits'])
+    ->middleware(['auth:sanctum','role:admin,super_admin','throttle:5,1']);
  // pesa pal management
 Route::middleware(['auth:sanctum','throttle:5,1'])->group(function (){
 Route::get('v1/payments/pesapal/callback', [PesapalController::class,'callback'])
