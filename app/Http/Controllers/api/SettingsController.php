@@ -70,9 +70,8 @@ class SettingsController extends Controller
             }*/
             // delete account
         $user->profile()->delete();
-       
+        $user->currentAccessToken()->delete();
         $user->delete();
-
         return response()->json([
             'message'=>'Account deleted succesifully'
         ]);
