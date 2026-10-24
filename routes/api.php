@@ -112,15 +112,17 @@ Route::middleware(['auth:sanctum','role:admin,super_admin','throttle:5,1'])->gro
     ->middleware(['auth:sanctum','role:admin,super_admin','throttle:5,1']);
  // pesa pal management
 Route::middleware(['auth:sanctum','throttle:5,1'])->group(function (){
-Route::get('v1/payments/pesapal/callback', [PesapalController::class,'callback'])
-->name('pesapal.callback');
-
-Route::get('v1/payments/pesapal/cancel', [ PesapalController::class,  'cancel'])
-->name('pesapal.cancel');
 
 Route::get('v1/payments/pesapal/ipn', [ PesapalController::class, 'ipn'])
 ->name('pesapal.ipn');
 });
+
+Route::get('v1/payments/pesapal/callback', [PesapalController::class,'callback'])
+->name('pesapal.callback');
+// cancel payment
+Route::get('v1/payments/pesapal/cancel', [ PesapalController::class,  'cancel'])
+->name('pesapal.cancel');
+
 
 // product management
 // view all products
