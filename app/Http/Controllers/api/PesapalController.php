@@ -43,7 +43,7 @@ class PesapalController extends Controller
     // obtain real transaction status
     private function processPayment(string $trackingId, PesapalTokenService $tokenService)
     {
-        //  ENSURE A VALID TOKEN 
+        //   VALID TOKEN CHECK
         $tokenService->ensureValidToken();
 
         // Asking Pesapal for the transaction status.
@@ -98,7 +98,7 @@ class PesapalController extends Controller
                     'payment_method' => 'pesapal',
                 ]);
 
-                // NOW the money is considered received.
+                //  money is considered received.
                 $deposit->savingGoal()->increment(
                     'current_amount',
                     $deposit->amount
@@ -113,10 +113,18 @@ class PesapalController extends Controller
     }
 
     // cancel payment
-    public function cancel()
+   // cancel payment
+    public function cancel(Request $request)
     {
-        return response()->json([
-            'message' => 'Payment was cancelled.'
-        ]);
+        $trackingId = $request->query('OrderTrackingId');
+
+        // Optional: Update deposit status in your database if you want
+        if ($trackingId) {
+            \App\Models\Deposit::where('pesapal_tracking_id', $trackingId)
+                ->where('status', 'pending')
+                ->update(['status' => 'cancelled']);
+        }
+        // Safely redirect the browser to your frontend teammate's dashboard
+        return redirect()->away('https://hunter-ten-phi.vercel.app/dashboard');
     }
 }
