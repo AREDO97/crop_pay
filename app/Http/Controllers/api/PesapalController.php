@@ -12,7 +12,7 @@ use NjoguAmos\Pesapal\Pesapal;
 
 class PesapalController extends Controller
 {
-    // Pesapal redirects the user's browser here after payment.
+    // Pesapal redirect after payment.
     public function callback(Request $request, PesapalTokenService $tokenService)
     {
         $trackingId = $request->query('OrderTrackingId');
@@ -43,10 +43,10 @@ class PesapalController extends Controller
     // obtain real transaction status
     private function processPayment(string $trackingId, PesapalTokenService $tokenService)
     {
-        // 1. ENSURE A VALID TOKEN EXISTS BEFORE QUERYING STATUS
+        //  ENSURE A VALID TOKEN 
         $tokenService->ensureValidToken();
 
-        // Ask Pesapal for the transaction status.
+        // Asking Pesapal for the transaction status.
         $transaction = Pesapal::getTransactionStatus(
             orderTrackingId: $trackingId
         );
@@ -57,7 +57,7 @@ class PesapalController extends Controller
             ], 502);
         }
 
-        // Find deposit using Pesapal's tracking ID.
+        // Finding deposit using Pesapal's tracking ID.
         $deposit = Deposit::where(
             'pesapal_tracking_id',
             $trackingId

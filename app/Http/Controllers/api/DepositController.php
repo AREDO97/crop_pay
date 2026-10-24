@@ -36,7 +36,7 @@ class DepositController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        // 1. ENSURE A VALID TOKEN EXISTS BEFORE CALLING PESAPAL
+        //  ENSURING A VALID TOKEN EXISTS BEFORE CALLING PESAPAL
         $tokenService->ensureValidToken();
 
         //  unique merchant reference.
