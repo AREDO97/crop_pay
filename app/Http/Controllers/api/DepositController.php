@@ -116,4 +116,17 @@ class DepositController extends Controller
         // response
         return response()->json($deposits);
     }
+    // all deposits
+    public function deposits(Request $request)
+    {
+        $admin = $request->user();
+
+    if ($admin->role !== 'admin' && $admin->role !== 'super_admin') {
+        abort(403, 'Unauthorised action');
+    }
+    // all deposits
+    $deposits = Deposit::latest()->paginate(10);
+    // response
+    return response()->json($deposits); 
+    }
 }
