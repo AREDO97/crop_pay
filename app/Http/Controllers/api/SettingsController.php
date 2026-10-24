@@ -62,12 +62,12 @@ class SettingsController extends Controller
     public function deleteAccount(Request $request)
     {
         $user=$request->user();
-        if(! Hash::check($request->password,$user->password))
+       /* if(! Hash::check($request->password,$user->password))
             {
             return response()->json([
             'message'=>'Invalid password , try again'
             ]);
-            }
+            }*/
             // delete account
         $user->profile()->delete();
        
