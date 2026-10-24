@@ -18,15 +18,19 @@ class SavingGoalController extends Controller
         // logged in user
         $user = $request->user();
         // validation
-        $request->validate([
-            'target_amount'=>'required|sometimes',
-            'category_id'  => 'required'
+            $request->validate([
+            'target_amount' => ['required', 'numeric', 'gt:0'],
+            'category_id'   => ['required', 'exists:categories,id'],
+            'description'   => ['nullable', 'string', 'max:100'],
+            'target_date'   => ['nullable', 'date', 'after_or_equal:today'],
         ]);
         // create goal
         $goal = SavingGoal::create([
             'user_id'       => $user->id,
             'category_id'   => $request->category_id,
             'target_amount' =>$request->target_amount,
+            'description'   =>$request->description,
+            'target_date'   =>$request->target_date
         ]);
         // insert contact into profile
         $profile = $user->profile;
