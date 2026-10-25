@@ -201,14 +201,9 @@ public function googleCallback()
         // Redirecting to frontend with  token as a query parameter
         return redirect()->away('https://hunter-ten-phi.vercel.app/dashboard?token=' . $plainTextToken);
 
-    }  catch (\Exception $e) {
-        // TEMPORARY DEBUG: Return the error message directly to the browser
-        return response()->json([
-            'status' => 'error',
-            'message' => $e->getMessage(),
-            'line' => $e->getLine(),
-            'file' => $e->getFile(),
-        ], 500);
+    }   catch (\Exception $e) {
+        // Force Laravel to crash and display the full error page/stack trace
+        abort(500, 'Socialite Error: ' . $e->getMessage() . ' in file ' . $e->getFile() . ' on line ' . $e->getLine());
     }
 }
 
