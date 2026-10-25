@@ -55,7 +55,7 @@ class DepositController extends Controller
         // send an sms
         $sms->send(
             $request->phone,
-            'Your depositing money into crop pay, enter pin to approve'
+            'Crop Pay: Your deposit request has been initiated. Please wait for the payment prompt on your phone to approve the transaction.'
         );
 
         // Get the IPN ID registered with Pesapal.

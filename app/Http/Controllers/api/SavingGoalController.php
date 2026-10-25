@@ -39,7 +39,7 @@ class SavingGoalController extends Controller
         if ($profile && !empty($profile->phone)) {
         $sms->send(
             $profile->phone,
-            'Your saving goal has been created, proceed to make your first deposit'
+            'Crop Pay: Your saving goal was created successfully. Make your first deposit to start working towards your target.'
         );
     }
     
