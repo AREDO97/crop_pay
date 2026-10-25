@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Models\ProductSale;
 use App\Models\User;
+use App\Services\YoolaSmsService;
 use App\Notifications\productSaleNotification;
 use App\Notifications\saleReceivedNotification;
 use Illuminate\Http\Request;
@@ -13,7 +14,7 @@ class ProductSaleController extends Controller
 {
     //create a product sale 
    
-        public function create(Request $request)
+        public function create(Request $request,YoolaSmsService $sms)
         {
             $user = $request->user();
             //validation
@@ -48,6 +49,12 @@ class ProductSaleController extends Controller
                 $user->notify(
                     new saleReceivedNotification($user->name)
                 );
+
+                // send sms to user
+                 $sms->send(
+                $user->profile->phone,
+                'Crop Pay: Your product sale request has been received. We’ll review it and get back to you shortly. Thank you!'
+        );
             // response
             return response()->json([
                 'message'      => "Product placed on sale",

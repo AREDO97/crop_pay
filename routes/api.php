@@ -21,9 +21,9 @@ use App\Http\Controllers\auth\PasswordResetController;
 // register & login
 Route::prefix('v1')->middleware(['throttle:6,1'])->group(function (){
 // register user
-Route::post('v1/register',[AuthController::class,'register']);
+Route::post('register',[AuthController::class,'register']);
 // login user
-Route::post('v1/login',[authController::class,'login']);
+Route::post('login',[authController::class,'login']);
 });
 
 // log out endpoint
