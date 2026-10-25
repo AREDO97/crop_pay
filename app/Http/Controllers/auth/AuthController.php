@@ -198,13 +198,17 @@ public function googleCallback()
         $tokenResult = $user->createToken('auth_token');
         $plainTextToken = $tokenResult->plainTextToken;
 
-        // Redirect to your frontend dashboard with the token as a query parameter
-        // (Your frontend teammate's router/auth listener can automatically capture this token and save it to localStorage)
+        // Redirecting to frontend with  token as a query parameter
         return redirect()->away('https://hunter-ten-phi.vercel.app/dashboard?token=' . $plainTextToken);
 
-    } catch (\Exception $e) {
-        // If something fails, redirect back to login or frontend error page
-        return redirect()->away('https://hunter-ten-phi.vercel.app/login?error=google_failed');
+    }  catch (\Exception $e) {
+        // TEMPORARY DEBUG: Return the error message directly to the browser
+        return response()->json([
+            'status' => 'error',
+            'message' => $e->getMessage(),
+            'line' => $e->getLine(),
+            'file' => $e->getFile(),
+        ], 500);
     }
 }
 
