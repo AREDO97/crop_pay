@@ -209,22 +209,32 @@ public function googleCallback()
         ];
 
         // Return a lightweight HTML snippet that mimics successful client-side login storage
-        $html = "
+       $html = "
         <html>
             <head><title>Logging in with Google...</title></head>
             <body>
                 <script>
-                    // Save token and user info matching what your frontend expects in localStorage
-                    localStorage.setItem('auth_token', '{$tokenResult->plainTextToken}');
-                    localStorage.setItem('user', JSON.stringify(" . json_encode($user) . "));
+                    const token = '{$tokenResult->plainTextToken}';
+                    const userData = " . json_encode($user) . ";
                     
-                    // Redirect straight to the dashboard; frontend AuthContext will pick up the stored token
+                    // Save all possible token variations your frontend might be looking for
+                    localStorage.setItem('auth_token', token);
+                    localStorage.setItem('token', token);
+                    localStorage.setItem('ACCESS_TOKEN', token);
+                    localStorage.setItem('user', JSON.stringify(userData));
+                    
+                    // Also set a cookie just in case they use cookies for Sanctum
+                    document.cookie = 'auth_token=' + token + '; path=/; domain=.vercel.app; secure';
+
+                    // Redirect straight to dashboard
                     window.location.href = 'https://hunter-ten-phi.vercel.app/dashboard';
                 </script>
-                <p>Google authentication successful. Redirecting to dashboard...</p>
+                <p>Google authentication successful. Redirecting...</p>
             </body>
         </html>
         ";
+
+        return response($html, 200)->header('Content-Type', 'text/html');
 
         return response($html, 200)->header('Content-Type', 'text/html');
 
