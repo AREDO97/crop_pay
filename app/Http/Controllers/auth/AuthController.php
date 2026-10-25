@@ -179,6 +179,7 @@ public function google()
     return Socialite::driver('google')->stateless()->redirect();
 }
 // google callback
+// google callback
 public function googleCallback()
 {
     try {
@@ -194,16 +195,42 @@ public function googleCallback()
             'password'  => bcrypt(Str::random(16)),
         ]);
 
-        // Issue token to user
+        // Issue token to user (matches your manual login structure)
         $tokenResult = $user->createToken('auth_token');
-        $plainTextToken = $tokenResult->plainTextToken;
 
-        // Redirecting to frontend with  token as a query parameter
-        return redirect()->away('https://hunter-ten-phi.vercel.app/dashboard?token=' . $plainTextToken);
+        $tokenData = [
+            'accessToken' => [
+                'name' => 'auth_token',
+                'abilities' => ['*'],
+                'tokenable_id' => $user->id,
+                'tokenable_type' => get_class($user),
+            ],
+            'plainTextToken' => $tokenResult->plainTextToken
+        ];
 
-    }   catch (\Exception $e) {
-        // Force Laravel to crash and display the full error page/stack trace
-        abort(500, 'Socialite Error: ' . $e->getMessage() . ' in file ' . $e->getFile() . ' on line ' . $e->getLine());
+        // Return a lightweight HTML snippet that mimics successful client-side login storage
+        $html = "
+        <html>
+            <head><title>Logging in with Google...</title></head>
+            <body>
+                <script>
+                    // Save token and user info matching what your frontend expects in localStorage
+                    localStorage.setItem('auth_token', '{$tokenResult->plainTextToken}');
+                    localStorage.setItem('user', JSON.stringify(" . json_encode($user) . "));
+                    
+                    // Redirect straight to the dashboard; frontend AuthContext will pick up the stored token
+                    window.location.href = 'https://hunter-ten-phi.vercel.app/dashboard';
+                </script>
+                <p>Google authentication successful. Redirecting to dashboard...</p>
+            </body>
+        </html>
+        ";
+
+        return response($html, 200)->header('Content-Type', 'text/html');
+
+    } catch (\Exception $e) {
+        // If anything fails, route back to login with an error flag
+        return redirect()->away('https://hunter-ten-phi.vercel.app/login?error=google_failed');
     }
 }
 
