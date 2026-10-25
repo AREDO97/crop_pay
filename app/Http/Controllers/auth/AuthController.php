@@ -178,7 +178,7 @@ public function google()
     // creating a redirect to google
     return Socialite::driver('google')->stateless()->redirect();
 }
-
+// google callback
 public function googleCallback()
 {
     try {
@@ -195,21 +195,19 @@ public function googleCallback()
         ]);
 
         // Issue token to user
-        $token = $user->createToken('auth_token');
+        $tokenResult = $user->createToken('auth_token');
+        $plainTextToken = $tokenResult->plainTextToken;
 
-        return response()->json([
-            'status' => 'success',
-            'token'  => $token,
-            'user'   => $user
-        ]);
+        // Redirect to your frontend dashboard with the token as a query parameter
+        // (Your frontend teammate's router/auth listener can automatically capture this token and save it to localStorage)
+        return redirect()->away('https://hunter-ten-phi.vercel.app/dashboard?token=' . $plainTextToken);
 
     } catch (\Exception $e) {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Google authentication failed.'
-        ], 422);
+        // If something fails, redirect back to login or frontend error page
+        return redirect()->away('https://hunter-ten-phi.vercel.app/login?error=google_failed');
     }
 }
+
 // forgot password endpoint
 public function forgotPassword(Request $request)
 {
