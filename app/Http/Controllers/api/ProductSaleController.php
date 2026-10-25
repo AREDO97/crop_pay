@@ -21,7 +21,8 @@ class ProductSaleController extends Controller
                'location'            => 'required|string|max:45',
                'brief_notes'         => 'nullable|string|max:100',
                'quantity'            => 'numeric', 
-               'expected_unit_price' =>'required|numeric'
+               'expected_unit_price' =>'required|numeric',
+               'product_id'          => 'required',
             ]);
             // create product sale
             $productSale = ProductSale::create([
