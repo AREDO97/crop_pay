@@ -195,52 +195,22 @@ public function googleCallback()
             'password'  => bcrypt(Str::random(16)),
         ]);
 
-        // Issue token to user (matches your manual login structure)
-        $tokenResult = $user->createToken('auth_token');
+        // Issue token to user
+        $token = $user->createToken('auth_token');
 
-        $tokenData = [
-            'accessToken' => [
-                'name' => 'auth_token',
-                'abilities' => ['*'],
-                'tokenable_id' => $user->id,
-                'tokenable_type' => get_class($user),
-            ],
-            'plainTextToken' => $tokenResult->plainTextToken
-        ];
-
-        // Return a lightweight HTML snippet that mimics successful client-side login storage
-       $html = "
-        <html>
-            <head><title>Logging in with Google...</title></head>
-            <body>
-                <script>
-                    const token = '{$tokenResult->plainTextToken}';
-                    const userData = " . json_encode($user) . ";
-                    
-                    // Save all possible token variations your frontend might be looking for
-                    localStorage.setItem('auth_token', token);
-                    localStorage.setItem('token', token);
-                    localStorage.setItem('ACCESS_TOKEN', token);
-                    localStorage.setItem('user', JSON.stringify(userData));
-                    
-                    // Also set a cookie just in case they use cookies for Sanctum
-                    document.cookie = 'auth_token=' + token + '; path=/; domain=.vercel.app; secure';
-
-                    // Redirect straight to dashboard
-                    window.location.href = 'https://hunter-ten-phi.vercel.app/dashboard';
-                </script>
-                <p>Google authentication successful. Redirecting...</p>
-            </body>
-        </html>
-        ";
-
-        return response($html, 200)->header('Content-Type', 'text/html');
-
-        return response($html, 200)->header('Content-Type', 'text/html');
+        // Return JSON response matching your manual login/signup structure
+        return response()->json([
+            'status' => 'success',
+            'token'  => $token,
+            'user'   => $user
+        ], 200);
 
     } catch (\Exception $e) {
-        // If anything fails, route back to login with an error flag
-        return redirect()->away('https://hunter-ten-phi.vercel.app/login?error=google_failed');
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Google authentication failed.',
+            'error' => $e->getMessage()
+        ], 422);
     }
 }
 
