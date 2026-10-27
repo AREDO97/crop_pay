@@ -64,7 +64,11 @@ class SavingGoalController extends Controller
         $user = $request->user();
         $savingGoals = $user->savingGoals;
         // response
-        return response()->json($savingGoals);
+        return response()->json([
+            'user_saving_goals' => $savingGoals,
+            'user'              => $user,
+            'user_profile'      => $user->profile
+        ]);
     }
     // update saving goal
     public function update(Request $request,SavingGoal $goal)

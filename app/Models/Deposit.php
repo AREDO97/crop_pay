@@ -21,6 +21,7 @@ class Deposit extends Model
             'amount',
             'payment_method',
             'pesapal_tracking_id',
+            'phone_number',
             'reference',
             'status'
     ];
