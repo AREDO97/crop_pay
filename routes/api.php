@@ -12,6 +12,7 @@ use App\Http\Controllers\api\ProductController;
 use App\Http\Controllers\api\ProductSaleController;
 use App\Http\Controllers\api\SettingsController;
 use App\Http\Controllers\api\HealthController;
+use App\Http\Controllers\api\AdminDashboardController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\auth\EmailVerificationController;
 
@@ -19,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\auth\PasswordResetController;
 
 // register & login
-Route::prefix('v1')->middleware(['throttle:6,1'])->group(function (){
+Route::prefix('v1')->middleware(['throttle:10,1'])->group(function (){
 // register user
 Route::post('register',[AuthController::class,'register']);
 // login user
@@ -53,7 +54,7 @@ Route::get('v1/getMe',[AuthController::class,'getMe'])->middleware('auth:sanctum
 ->name('auth me');
 
 // user management only admins $ super_admins
-Route::prefix('v1')->middleware(['auth:sanctum', 'role:admin,super_admin','throttle:5,1'])->group(function () {
+Route::prefix('v1')->middleware(['auth:sanctum', 'role:admin,super_admin'])->group(function () {
     // all users
     Route::get('users',[UserController::class,'index'])->name('view users');
     // user activity
@@ -75,7 +76,7 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'role:admin,super_admin','throt
 
 
 // saving category management
-Route::prefix('v1')->middleware(['auth:sanctum','role:admin,super_admin','throttle:5,1'])->group(function (){
+Route::prefix('v1')->middleware(['auth:sanctum','role:admin,super_admin'])->group(function (){
     // create saving category
     Route::post('saving_category',[SavingCategoryController::class,'create'])
     ->name('create category');
@@ -92,7 +93,7 @@ Route::prefix('v1')->middleware(['auth:sanctum','role:admin,super_admin','thrott
 
  
  // user saving goal management
- Route::prefix('v1')->middleware(['auth:sanctum','throttle:5,1'])->group(function (){
+ Route::prefix('v1')->middleware(['auth:sanctum'])->group(function (){
     // User Saving Goals
     Route::get('saving_goals',[SavingGoalController::class,'UserSavingGoals']);
     // create saving goal
@@ -103,7 +104,7 @@ Route::prefix('v1')->middleware(['auth:sanctum','role:admin,super_admin','thrott
  });
 
  // deposit management
- Route::prefix('v1')->middleware(['auth:sanctum','throttle:4,1'])->group(function (){
+ Route::prefix('v1')->middleware(['auth:sanctum'])->group(function (){
     // user deposits
     Route::get('deposits',[DepositController::class,'index']);
     // deposit money
@@ -111,9 +112,9 @@ Route::prefix('v1')->middleware(['auth:sanctum','role:admin,super_admin','thrott
  });
 // all deposits
     Route::get('v1/deposits/admin',[DepositController::class,'deposits'])
-    ->middleware(['auth:sanctum','role:admin,super_admin','throttle:5,1']);
+    ->middleware(['auth:sanctum','role:admin,super_admin']);
  // pesa pal management
-Route::prefix('v1')->middleware(['auth:sanctum','throttle:5,1'])->group(function (){
+Route::prefix('v1')->middleware(['auth:sanctum'])->group(function (){
 
 Route::get('payments/pesapal/ipn', [ PesapalController::class, 'ipn'])
 ->name('pesapal.ipn');
@@ -131,7 +132,7 @@ Route::get('v1/payments/pesapal/cancel', [ PesapalController::class,  'cancel'])
 Route::get('v1/products',[ProductController::class,'index'])
 ->middleware('auth:sanctum')->name('view products');
 // product admin management
-Route::prefix('v1')->middleware(['auth:sanctum','role:admin,super_admin','throttle:5,1'])
+Route::prefix('v1')->middleware(['auth:sanctum','role:admin,super_admin'])
 ->group(function(){
     // create product
     Route::post('products',[ProductController::class,'create'])
@@ -145,7 +146,7 @@ Route::prefix('v1')->middleware(['auth:sanctum','role:admin,super_admin','thrott
 });
 
     // product sale management
-Route::prefix('v1')->middleware(['auth:sanctum','throttle:5,1'])->group(function(){
+Route::prefix('v1')->middleware(['auth:sanctum'])->group(function(){
     // create product sale
   Route::post('product_sales',[ProductSaleController::class,'create']);
     // user product sales
@@ -170,7 +171,7 @@ Route::prefix('v1')->middleware(['auth:sanctum'])->group(function () {
 
 
     // settings management
-Route::prefix('v1')->middleware(['auth:sanctum','throttle:5,1'])->group(function () {
+Route::prefix('v1')->middleware(['auth:sanctum'])->group(function () {
     // updatePassword
 Route::patch('password',[SettingsController::class,'updatePassword'])
 ->name('update password');
@@ -196,7 +197,7 @@ Route::prefix('v1')->middleware(['auth:sanctum','role:super_admin,admin'])->grou
 });
 
 // health checks
-Route::prefix('v1')->middleware(['auth:sanctum','role:admin,super_admin','verified','throttle:5,1'])
+Route::prefix('v1')->middleware(['auth:sanctum','role:admin,super_admin','verified','throttle:10,1'])
 ->group(function () {
     // Check Laravel + MySQL 
     Route::get('health', [HealthController::class, 'health']); 
@@ -205,3 +206,8 @@ Route::prefix('v1')->middleware(['auth:sanctum','role:admin,super_admin','verifi
 });
 
 
+// dashboard stats
+Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
+    // Admin stats endpoint
+    Route::get('/admin/stats', [AdminDashboardController::class, 'stats']);
+});

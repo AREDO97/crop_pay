@@ -49,6 +49,7 @@ class DepositController extends Controller
             'amount' => $request->amount,
             'reference' => $reference,
             'status' => 'pending',
+            'phone_number'   => $request->phone,
             'payment_method' => 'pesapal',
         ]);
 
@@ -114,7 +115,9 @@ class DepositController extends Controller
         // user deposits
         $deposits = $user->deposits;
         // response
-        return response()->json($deposits);
+        return response()->json([
+            'user_deposits'=> $deposits,
+        ]);
     }
     // all deposits
     public function deposits(Request $request)
