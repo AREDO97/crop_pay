@@ -156,7 +156,9 @@ Route::prefix('v1')->middleware(['auth:sanctum'])->group(function(){
     // user product sales
   Route::get('product_sales',[ProductSaleController::class,'index']);
     // all platform product sales
-  Route::get('admin/product_sales',[ProductSaleController::class,'allProductSales']);
+  Route::get('product_sales/admin',[ProductSaleController::class,'allProductSales']);
+    // update sale status
+ Route::patch('product_sales/{sale}',[ProductSaleController::class,'resolveSale']);
 });
 
 

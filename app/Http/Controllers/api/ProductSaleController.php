@@ -84,4 +84,24 @@ class ProductSaleController extends Controller
         // response
         return response()->json($sales);
         }
+
+        // resolve product sale 
+        public function resolveSale(Request $request,ProductSale $sale)
+        {
+                 // current user
+             $admin = $request->user();
+
+            if ($admin->role !== 'admin' && $admin->role !== 'super_admin') {
+                abort(403, 'Unauthorised action');
+            }
+                // update status
+                $sale->update([
+                    'status' => 'resolved'
+                ]);
+                // response
+                return response()->json([
+                    'message' => "Product sale resolved successifully",
+                    'product_sale' => $sale
+                ]);
+        }
 }
