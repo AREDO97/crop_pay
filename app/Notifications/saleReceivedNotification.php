@@ -51,7 +51,7 @@ class saleReceivedNotification extends Notification
     {
         return [
             //
-            'message' => 'Hello,'.$this->name.' your product sale request has been received,we shall respond to you shortly'
+            'message' => 'Hello, '.$this->name.'! 🌾 We’ve received your product sale request and will update you soon. Thank you for choosing Crop Pay! 💚'
         ];
     }
 }

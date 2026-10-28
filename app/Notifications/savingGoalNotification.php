@@ -51,7 +51,6 @@ class savingGoalNotification extends Notification
     {
         return [
             //
-            'message' => $this->name.' created a new saving goal'
-        ];
+     'message' => $this->name.' has successfully created a new saving goal! 🎯'        ];
     }
 }
