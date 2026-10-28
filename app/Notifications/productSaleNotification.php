@@ -51,7 +51,7 @@ class productSaleNotification extends Notification
     {
         return [
             //
-            'message' => $this->name.' requested a product sale'
+            'message' => $this->name.' has submitted a new product sale request! 🌾'
         ];
     }
 }

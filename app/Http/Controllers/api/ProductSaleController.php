@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Services\YoolaSmsService;
 use App\Notifications\productSaleNotification;
 use App\Notifications\saleReceivedNotification;
+use App\Notifications\saleResolvedNotification;
 use Illuminate\Http\Request;
 
 class ProductSaleController extends Controller
@@ -86,7 +87,7 @@ class ProductSaleController extends Controller
         }
 
         // resolve product sale 
-        public function resolveSale(Request $request,ProductSale $sale)
+        public function resolveSale(Request $request,ProductSale $sale,YoolaSmsService $sms)
         {
                  // current user
              $admin = $request->user();
@@ -98,6 +99,16 @@ class ProductSaleController extends Controller
                 $sale->update([
                     'status' => 'resolved'
                 ]);
+                // notify user
+                $user = $sale->user;
+                $user->notify(
+                    new saleResolvedNotification()
+                );
+                // send sms to user
+                    $sms->send(
+                        $user->profile->phone,
+                        "Hello ".$user->name.", your product sale request has been successfully resolved by Crop Pay. Thank you for choosing us! 🌾"
+                            );
                 // response
                 return response()->json([
                     'message' => "Product sale resolved successifully",
