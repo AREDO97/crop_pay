@@ -13,6 +13,7 @@ use App\Http\Controllers\api\ProductSaleController;
 use App\Http\Controllers\api\SettingsController;
 use App\Http\Controllers\api\HealthController;
 use App\Http\Controllers\api\AdminDashboardController;
+use App\Http\Controllers\api\ProfileController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\auth\EmailVerificationController;
 
@@ -74,6 +75,15 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'role:admin,super_admin'])->gro
     
 });
 
+
+// user profile management
+Route::prefix('v1')->middleware(['auth:sanctum'])->group(function () {
+    // show profile
+    Route::get('user_profile',[ProfileController::class,'index']);
+    // update profile
+    Route::patch('user_profile',[ProfileController::class,'update']);
+
+});
 
 // saving category management
 Route::prefix('v1')->middleware(['auth:sanctum','role:admin,super_admin'])->group(function (){
