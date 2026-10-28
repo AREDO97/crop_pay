@@ -53,7 +53,7 @@ class ProductSaleController extends Controller
                 // send sms to user
                  $sms->send(
                 $user->profile->phone,
-                'Crop Pay: Your product sale request has been received. We’ll review it and get back to you shortly.'
+                'Crop Pay: Your product sale request has been received. We’ll review it and get back to you shortly.Thank you !'
         );
             // response
             return response()->json([

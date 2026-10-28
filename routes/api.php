@@ -96,10 +96,14 @@ Route::prefix('v1')->middleware(['auth:sanctum','role:admin,super_admin'])->grou
  Route::prefix('v1')->middleware(['auth:sanctum'])->group(function (){
     // User Saving Goals
     Route::get('saving_goals',[SavingGoalController::class,'UserSavingGoals']);
+    // get all saving goals
+    Route::get('saving_goals/admin',[SavingGoalController::class,'index']);
     // create saving goal
     Route::post('saving_goals',[SavingGoalController::class,'create']);
    // update saving goal
     Route::patch('saving_goals/{goal}',[SavingGoalController::class,'update']);
+    // delete saving goal
+    Route::delete('saving_goals/{goal}',[SavingGoalController::class,'destroy']);
 
  });
 

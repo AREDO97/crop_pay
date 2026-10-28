@@ -62,7 +62,7 @@ class SavingGoalController extends Controller
     public function UserSavingGoals(Request $request)
     {
         $user = $request->user();
-        $savingGoals = $user->savingGoals;
+        $savingGoals = $user->savingGoals()->where('is_active',true)->get();
         // response
         return response()->json([
             'user_saving_goals' => $savingGoals,
@@ -94,6 +94,39 @@ class SavingGoalController extends Controller
                 'saving_goal' => $goal
             ]);
     }
-    // delete saving goal 
-    
+    // all saving goals
+    public function index(Request $request)
+    {
+          $admin = $request->user();
+
+    if ($admin->role !== 'admin' && $admin->role !== 'super_admin') {
+        abort(403, 'Unauthorised action');
+    }
+    // all goals
+        $goals = SavingGoal::with('user')->latest()->paginate(10);
+        // response
+        return response()->json($goals);
+    }
+    // delete saving goal
+   // Delete saving goal (Soft delete / Deactivate)
+public function destroy(Request $request, SavingGoal $goal)
+{
+    $user = $request->user();
+
+    // Check ownership
+    if ($user->id !== $goal->user_id) {
+        abort(403, 'Unauthorized action.');
+    }
+
+    // Deactivate the saving goal
+    $goal->update([
+        'is_active' => false,
+    ]);
+
+    // Return JSON response
+    return response()->json([
+        'message' => 'Saving goal deleted successfully, your money will be refunded to your account.',
+        'goal'    => $goal,
+    ], 200);
+}
 }
