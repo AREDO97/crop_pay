@@ -81,7 +81,7 @@ class ProductSaleController extends Controller
         abort(403, 'Unauthorised action');
     }
         // sales
-        $sales = ProductSale::latest()->paginate(10);
+        $sales = ProductSale::with('user.profile')->latest()->paginate(10);
         // response
         return response()->json($sales);
         }

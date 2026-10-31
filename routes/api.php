@@ -160,17 +160,19 @@ Route::prefix('v1')->middleware(['auth:sanctum','role:admin,super_admin'])
 });
 
     // product sale management
-Route::prefix('v1')->middleware(['auth:sanctum'])->group(function(){
-    // create product sale
-  Route::post('product_sales',[ProductSaleController::class,'create']);
+Route::prefix('v1')->middleware(['auth:sanctum','role:admin,super_admin'])->group(function(){
+  
     // user product sales
   Route::get('product_sales',[ProductSaleController::class,'index']);
+    // update sale status
+  Route::patch('product_sales/{sale}',[ProductSaleController::class,'resolveSale']);
     // all platform product sales
   Route::get('product_sales/admin',[ProductSaleController::class,'allProductSales']);
-    // update sale status
- Route::patch('product_sales/{sale}',[ProductSaleController::class,'resolveSale']);
 });
 
+   // create product sale
+  Route::post('v1/product_sales',[ProductSaleController::class,'create'])
+  ->middleware('auth:sanctum','role:admin,super_admin');
 
     // notifications management
 Route::prefix('v1')->middleware(['auth:sanctum'])->group(function () {
