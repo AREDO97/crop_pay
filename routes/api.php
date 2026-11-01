@@ -172,7 +172,7 @@ Route::prefix('v1')->middleware(['auth:sanctum','role:admin,super_admin'])->grou
 
    // create product sale
   Route::post('v1/product_sales',[ProductSaleController::class,'create'])
-  ->middleware('auth:sanctum','role:admin,super_admin');
+  ->middleware('auth:sanctum');
 
     // notifications management
 Route::prefix('v1')->middleware(['auth:sanctum'])->group(function () {

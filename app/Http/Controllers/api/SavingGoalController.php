@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\UserProfile;
 use App\Notifications\savingGoalNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class SavingGoalController extends Controller
 {
@@ -36,12 +37,14 @@ class SavingGoalController extends Controller
         $profile = $user->profile;
         // send sms to user
           // Send SMS only if profile exists and has a phone number
-        if ($profile && !empty($profile->phone)) {
-        $sms->send(
-            $profile->phone,
-            'Crop Pay🌾: Your saving goal was created successfully. Make your first deposit to start working towards your target.'
-        );
-    }
+      try {
+    $sms->send(
+        $profile->phone,
+        'Crop Pay: Your saving goal was created successfully. Make your first deposit to start working towards your target.'
+    );
+} catch (\Throwable $e) {
+    Log::error('SMS sending failed: '.$e->getMessage());
+}
     
         // notify admins
         $admins = User::whereIn('role',['admin','super_admin'])->get();
