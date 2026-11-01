@@ -10,6 +10,7 @@ use App\Notifications\productSaleNotification;
 use App\Notifications\saleReceivedNotification;
 use App\Notifications\saleResolvedNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ProductSaleController extends Controller
 {
@@ -52,10 +53,18 @@ class ProductSaleController extends Controller
                 );
 
                 // send sms to user
-                 $sms->send(
+                try
+                {
+                       $sms->send(
                 $user->profile->phone,
                 'Crop Pay: Your product sale request has been received. We’ll review it and get back to you shortly.Thank you !'
         );
+                }
+                catch(\Throwable $e)
+                {
+                    Log::error('Sms sending failed');
+                }
+              
 
              // log action 
          $logs = AuditLog::logAction(
@@ -117,10 +126,17 @@ class ProductSaleController extends Controller
                     new saleResolvedNotification()
                 );
                 // send sms to user
-                    $sms->send(
+                try{
+                     $sms->send(
                         $user->profile->phone,
                         "Hello ".$user->name.", your product sale request has been successfully resolved by Crop Pay. Thank you for choosing us! 🌾"
-                            );
+                          );
+                }
+                catch(\Throwable $e)
+                {
+                    Log::error('Sms Sending failed');
+                }
+                   
                      // log action 
          $logs = AuditLog::logAction(
         $request,
