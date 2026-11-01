@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Models\SavingCategory;
 use Illuminate\Http\Request;
+use App\Models\AuditLog;
 
 class SavingCategoryController extends Controller
 {
@@ -26,6 +27,17 @@ public function create(Request $request)
         'name'        => $request->name,
         'description' => $request->description,
     ]);
+
+     $logs = AuditLog::logAction(
+        $request,
+        $admin->id,
+        'Saving Category Creation',
+         [
+        'message' => 'Admin created a new saving category',
+        'name'    => $admin->name,
+        'email'   => $admin->email,
+         ]
+    );
 
     return response()->json($category);
 }
@@ -49,6 +61,17 @@ public function create(Request $request)
         'description' => $request->description ?? $category->description,
     ]);
 
+     $logs = AuditLog::logAction(
+        $request,
+        $admin->id,
+        'Saving Category Update',
+         [
+        'message' => 'Admin updated a saving category',
+        'name'    => $admin->name,
+        'email'   => $admin->email,
+         ]
+    );
+    // response
     return response()->json([
         'message'  => 'Category updated successfully',
         'category' => $category,
@@ -65,6 +88,17 @@ public function create(Request $request)
             $category->update([
                 'is_active'=>false
             ]);
+
+             $logs = AuditLog::logAction(
+        $request,
+        $admin->id,
+        'Saving Category Deletion',
+         [
+        'message' => 'Admin deleted a saving category',
+        'name'    => $admin->name,
+        'email'   => $admin->email,
+         ]
+    );
             // response
             return response()->json([
                 'message' => 'Category deleted successifully',

@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\api;
-
+use App\Models\AuditLog;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -28,6 +28,18 @@ class ProductController extends Controller
         'description' =>$request->description,
         'unit'        =>$request->unit
     ]);
+
+     // log action 
+         $logs = AuditLog::logAction(
+        $request,
+        $admin->id,
+        'Product Creation',
+         [
+        'message' => 'Admin created a new product',
+        'name'    => $admin->name,
+        'email'   => $admin->email,
+         ]
+    );
     // response
     return response()->json([
         'message' =>'Product created successifully',
@@ -54,6 +66,18 @@ class ProductController extends Controller
         'description' =>$request->description ?? $product->description,
         'unit'        =>$request->unit ?? $product->unit
     ]);
+
+     // log action 
+         $logs = AuditLog::logAction(
+        $request,
+        $admin->id,
+        'Product Update',
+         [
+        'message' => 'Admin updated a product',
+        'name'    => $admin->name,
+        'email'   => $admin->email,
+         ]
+    );
     // response
     return response()->json([
         'message' =>'Product updated successifully',
@@ -81,6 +105,18 @@ class ProductController extends Controller
     $product->update([
         'is_active' => false
     ]);
+
+     // log action 
+         $logs = AuditLog::logAction(
+        $request,
+        $admin->id,
+        'Product Deletion',
+         [
+        'message' => 'Admin deleted a product',
+        'name'    => $admin->name,
+        'email'   => $admin->email,
+         ]
+    );
     // response
     return response()->json([
         'message' => 'Product deleted successifully',

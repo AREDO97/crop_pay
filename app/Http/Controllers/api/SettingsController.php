@@ -32,7 +32,17 @@ class SettingsController extends Controller
            'password'=>Hash::make($request->password)
         ]);
 
-      
+      // log action
+       $logs = AuditLog::logAction(
+        $request,
+        $user->id,
+        'Password Update',
+         [
+        'message' => 'User updated password',
+        'name'    => $user->name,
+        'email'   => $user->email,
+         ]
+    );
         return response()->json([
             'message'=>'password updated successifully'
         ]);
@@ -52,6 +62,17 @@ class SettingsController extends Controller
             'email'=>$request->email ?? $user->email
         ]);
 
+              // log action
+       $logs = AuditLog::logAction(
+        $request,
+        $user->id,
+        'Bio Update',
+         [
+        'message' => 'User updated profile information',
+        'name'    => $user->name,
+        'email'   => $user->email,
+         ]
+    );
         return response()->json([
             'message'=>'Personal information updated',
             'new_name'=>$user->name,
@@ -69,6 +90,17 @@ class SettingsController extends Controller
             ]);
             }*/
             // delete account
+              // log action
+       $logs = AuditLog::logAction(
+        $request,
+        $user->id,
+        'Account Deletion',
+         [
+        'message' => 'User deleted account',
+        'name'    => $user->name,
+        'email'   => $user->email,
+         ]
+    );
         $user->profile()->delete();
         $user->currentAccessToken()->delete();
         $user->delete();

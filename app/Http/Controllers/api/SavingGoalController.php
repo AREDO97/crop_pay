@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\api;
 use App\Services\YoolaSmsService;
-
+use App\Models\AuditLog;
 use App\Http\Controllers\Controller;
 use App\Models\SavingGoal;
 use App\Models\User;
@@ -51,6 +51,18 @@ class SavingGoalController extends Controller
                     new savingGoalNotification($user->name)
                 );
             }
+
+        // log action 
+         $logs = AuditLog::logAction(
+        $request,
+        $user->id,
+        'Saving Goal Creation',
+         [
+        'message' => 'User created a new saving goal',
+        'name'    => $user->name,
+        'email'   => $user->email,
+    ]
+    );
         // response
         return response()->json([
             'message'     =>'Saving goal created successifully',
@@ -88,6 +100,18 @@ class SavingGoalController extends Controller
             $goal->update([
             'category_id'   => $request->category_id ?? $goal->category_id,
             ]);
+
+             // log action 
+         $logs = AuditLog::logAction(
+        $request,
+        $user->id,
+        'Saving Goal Update',
+         [
+        'message' => 'User updated saving goal',
+        'name'    => $user->name,
+        'email'   => $user->email,
+         ]
+                                  );
             // response
             return response()->json([
                 'message'     =>'Saving goal updated successifully',
@@ -122,7 +146,17 @@ public function destroy(Request $request, SavingGoal $goal)
     $goal->update([
         'is_active' => false,
     ]);
-
+         // log action 
+         $logs = AuditLog::logAction(
+        $request,
+        $user->id,
+        'Saving Goal Deletion',
+         [
+        'message' => 'User deleted a saving goal',
+        'name'    => $user->name,
+        'email'   => $user->email,
+    ]
+    );
     // Return JSON response
     return response()->json([
         'message' => 'Saving goal deleted successfully, your money will be refunded to your account.',
