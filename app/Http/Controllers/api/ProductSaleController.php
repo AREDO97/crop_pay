@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\api;
-
+use App\Models\AuditLog;
 use App\Http\Controllers\Controller;
 use App\Models\ProductSale;
 use App\Models\User;
@@ -56,6 +56,18 @@ class ProductSaleController extends Controller
                 $user->profile->phone,
                 'Crop Pay: Your product sale request has been received. We’ll review it and get back to you shortly.Thank you !'
         );
+
+             // log action 
+         $logs = AuditLog::logAction(
+        $request,
+        $user->id,
+        'Product Sale Request',
+         [
+        'message' => 'User submitted a new product sale request',
+        'name'    => $user->name,
+        'email'   => $user->email,
+    ]
+    );
             // response
             return response()->json([
                 'message'      => "Product placed on sale",
@@ -109,6 +121,17 @@ class ProductSaleController extends Controller
                         $user->profile->phone,
                         "Hello ".$user->name.", your product sale request has been successfully resolved by Crop Pay. Thank you for choosing us! 🌾"
                             );
+                     // log action 
+         $logs = AuditLog::logAction(
+        $request,
+        $admin->id,
+        'Product Sale Request',
+         [
+        'message' => 'Admin resolved a product sale request',
+        'name'    => $admin->name,
+        'email'   => $admin->email,
+         ]
+    );
                 // response
                 return response()->json([
                     'message' => "Product sale resolved successifully",

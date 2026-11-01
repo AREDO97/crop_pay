@@ -10,7 +10,7 @@ use App\Services\PesapalTokenService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
-
+use App\Models\AuditLog;
 use NjoguAmos\Pesapal\Pesapal;
 use NjoguAmos\Pesapal\DTOs\PesapalOrderData;
 use NjoguAmos\Pesapal\DTOs\PesapalAddressData;
@@ -53,6 +53,18 @@ class DepositController extends Controller
             'payment_method' => 'pesapal',
         ]);
 
+
+              // log action
+       $logs = AuditLog::logAction(
+        $request,
+        $user->id,
+        'Deposit Request',
+         [
+        'message' => 'User made a deposit request',
+        'name'    => $user->name,
+        'email'   => $user->email,
+         ]
+    );
         // send an sms
         $sms->send(
             $request->phone,
